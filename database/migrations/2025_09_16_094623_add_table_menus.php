@@ -13,9 +13,9 @@ class AddTableMenus extends Migration
      */
     public function up()
     {
-        DB::statement('CREATE EXTENSION IF NOT EXISTS "uuid-ossp";');
+        
         Schema::create('menus', function (Blueprint $table) {
-            $table->uuid('id')->primary();
+            $table->bigIncrements('id');
             $table->string('name')->nullable();
             $table->string('slug')->nullable();
             $table->string('icon')->nullable();
@@ -24,7 +24,7 @@ class AddTableMenus extends Migration
             $table->integer('number')->nullable();            
             $table->timestamps();
         });
-         DB::statement('ALTER TABLE menus ALTER COLUMN id SET DEFAULT uuid_generate_v4();');
+        
     }
 
     /**

@@ -13,18 +13,18 @@ class AddTableRoleMenus extends Migration
      */
     public function up()
     {
-        DB::statement('CREATE EXTENSION IF NOT EXISTS "uuid-ossp";');
+        
         Schema::create('role_menus', function (Blueprint $table) {
-            $table->uuid('id')->primary();
-            $table->uuid('role_id')->nullable();
-            $table->uuid('menu_id')->nullable(); 
+            $table->bigIncrements('id');
+            $table->integer('role_id')->nullable();
+            $table->integer('menu_id')->nullable(); 
             $table->integer('is_view')->default(1); 
             $table->integer('is_edit')->default(1);
             $table->integer('is_add')->default(1);
             $table->integer('is_delete')->default(1); 
             $table->timestamps();
         });
-         DB::statement('ALTER TABLE role_menus ALTER COLUMN id SET DEFAULT uuid_generate_v4();');
+        
     }
 
     /**

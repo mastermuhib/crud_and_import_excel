@@ -13,10 +13,10 @@ class AddTableAdministrators extends Migration
      */
     public function up()
     {
-        DB::statement('CREATE EXTENSION IF NOT EXISTS "uuid-ossp";');
+       
         Schema::create('administrators', function (Blueprint $table) {
-            $table->uuid('id')->primary();
-            $table->uuid('id_role')->nullable();
+            $table->bigIncrements('id');
+            $table->integer('id_role')->nullable();
             $table->string('admin_name')->nullable();
             $table->string('phone')->nullable();
             $table->string('email')->nullable();
@@ -28,7 +28,7 @@ class AddTableAdministrators extends Migration
             $table->text('address')->nullable();
             $table->timestamps();
         });
-        DB::statement('ALTER TABLE administrators ALTER COLUMN id SET DEFAULT uuid_generate_v4();');
+        
     }
 
     /**

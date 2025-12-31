@@ -130,7 +130,7 @@ class MemberController extends Controller
                                 $nik = (isset($line[1])) ? $line[1] : null ;  
                                 $name = (isset($line[2])) ? $line[2] : null ; 
                                 $birthplace = (isset($line[3])) ? $line[3] : null ; 
-                                $birthdate = (isset($line[4])) ? $line[4] : null ; 
+                                $birthday = (isset($line[4])) ? $line[4] : null ; 
                                 $status = (isset($line[5])) ? $line[5] : null ; 
                                 $gender = (isset($line[6])) ? $line[6] : null ; 
                                 $address = (isset($line[7])) ? $line[7] : null ; 
@@ -142,8 +142,8 @@ class MemberController extends Controller
                                     'nkk' => trim(preg_replace('/\s\s+/', ' ',$nkk)),
                                     'nik' => trim(preg_replace('/\s\s+/', ' ',$nik)),
                                     'name' => trim(preg_replace('/\s\s+/', ' ',$name)),
-                                    'birthplace' => trim(preg_replace('/\s\s+/', ' ',$birthdate)),
-                                    'birthday' => trim(preg_replace('/\s\s+/', ' ',$birthdate)),
+                                    'birthplace' => trim(preg_replace('/\s\s+/', ' ',$birthplace)),
+                                    'birthday' => trim(preg_replace('/\s\s+/', ' ',$birthday)),
                                     'gender' => trim(preg_replace('/\s\s+/', ' ',$gender)),
                                     'address' => trim(preg_replace('/\s\s+/', ' ',$address)),
                                     'rt' => trim(preg_replace('/\s\s+/', ' ',$rt)),
@@ -204,11 +204,10 @@ class MemberController extends Controller
         $start = $request->input('start');
         $dir   = $request->input('order.0.dir');
         $search = $request->search;
-        $status = $request->status;
-
+       
         $posts = $this->DataMember($request);
 
-        $posts = $posts->select('p.*','v.name as desa','c.name as kecamatan');
+        $posts = $posts->select('p.*');
         
         $totalFiltered = $posts->count();
         $posts = $posts->limit($limit)->offset($start)->get();
@@ -219,18 +218,17 @@ class MemberController extends Controller
             foreach ($posts as $d) {
                 $no = $no + 1;
 
-                $action = '<div style="float: left; margin-left: 5px;"><a href="/medical-record/pemeriksaan-tahunan/'.base64_encode($d->dpid).'" >
+                $action = '<div style="float: left; margin-left: 5px;"><a href="/medical-record/pemeriksaan-tahunan/'.base64_encode($d->id).'" >
                                 <button type="button" class="btn btn-warning btn-sm" style="min-width: 110px;margin-left: 2px;margin-top:3px;text-align:left"><i class="fa fa-eye"></i> Detail</button></a>
                             </div>';
 
                 $column['no']       = $no;
-                $column['kec']      = $d->kecamatan;
-                $column['kel']      = $d->desa;
                 $column['nik']      = $d->nik;
                 $column['name']     = $d->name;
                 $column['gender']   = $d->gender;
                 $column['status']   = $d->status;
-                $column['tps']      = $d->tps;
+                $column['birthday'] = $d->birthday;
+                $column['photo']    = $d->photo;
                 $column['actions']  = $action;
                 $data[]             = $column;
 
@@ -249,44 +247,17 @@ class MemberController extends Controller
     public function DataMember($request){
         $search      = $request->search;
         
-        $posts = DB::table('members as p')->leftJoin('villages as v','v.id','p.id_village')->leftJoin('districts as c','c.id','v.district_id');
+        $posts = DB::table('members as p');
         if ($search != null) {
             $posts = $posts->where(function ($query) use ($search,$request) {
                 $query->where('p.name','ilike', "%{$search}%");
-                $query->orWhere('v.name','ilike', "%{$search}%");
-                $query->orWhere('c.name','ilike', "%{$search}%");
+                $query->orWhere('address','ilike', "%{$search}%");
                 $query->orWhere('nik','ilike', "%{$search}%"); 
                 $query->orWhere('nkk','ilike', "%{$search}%");  
             });
         }
 
-        
-        if ($request->id_kec != null) {
-            $posts = $posts->where('v.district_id',$request->id_kec);
-        }
-
-        if ($request->id_kel != null) {
-            $posts = $posts->where('id_village',$request->id_kel);
-        }
-
-        if ($request->gender != null) {
-            $posts = $posts->where('gender',$request->gender);
-        }
-
-        if (isset($request->status)) {
-            $status      = $request->status;
-            if (count($status) > 0) {
-                $posts = $posts->whereIn('p.status',$status);
-            }
-        }
-
-        if (isset($request->klasifikasi)) {
-            $klasifikasi = $request->klasifikasi;
-            if (count($klasifikasi) > 0) {
-                $posts = $posts->whereIn('p.clasification',$klasifikasi);
-            }
-        }
-
+                
         return $posts;
     }
 

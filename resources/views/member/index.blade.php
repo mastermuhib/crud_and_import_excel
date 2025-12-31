@@ -2,7 +2,7 @@
 @section('asset')
 <link rel="stylesheet" type="text/css" href="{{URL::asset('assets')}}/vendors/css/forms/select/select2.min.css">
 @endsection
-@section('title', 'Master Payment Category')
+@section('title', 'Member')
 @section('content')
 <div class="accordion accordion-solid accordion-panel accordion-svg-toggle mb-3 mt-3" id="faq">
     <div class="card p-6 col-md-12">
@@ -77,7 +77,7 @@
                                                         <th>NIK</th>
                                                         <th>Nama</th>
                                                         <th>Tanggal Lahir</th>
-                                                        <th>Alamat</th>
+                                                        <th>Foto</th>
                                                         <th>Gender</th>
                                                         <th>Status</th>
                                                         <th>Action</th>
@@ -156,7 +156,7 @@ var column = [
         { "data": "nik" },
         { "data": "name" },
         { "data": "birthday" },
-        { "data": "address" },
+        { "data": "foto" },
         { "data": "gender" },
         { "data": "status" },
         { "data": "actions" },
@@ -189,7 +189,7 @@ $(function() {
 
 
 $("#s_search").keyup(function(){
-   data_tabel('/data_dpt')
+   data_tabel('/data_member')
    
 });
 

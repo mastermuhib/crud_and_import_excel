@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Model\RoleModel;
-use App\Model\dptModel;
+use App\Model\MemberModel;
 use App\Model\DistrictModel;
 use App\Model\KlasifikasiModel;
 use App\Model\CityModel;
@@ -19,7 +19,7 @@ use Illuminate\Support\Facades\Hash;
 use App\Exports\ExportPairingResults;
 use App\Exceptions\Handler;
 
-class DptController extends Controller
+class MemberController extends Controller
 {
     public function index()
     {
@@ -32,18 +32,16 @@ class DptController extends Controller
                 return redirect('/');
             } else {
                 $role_id           = Auth::guard('admin')->user()->id_role;
-                $data['data_kec'] = DistrictModel::whereNull('deleted_at')->select('id','name')->get();
-                $data['data_klasifikasi'] = KlasifikasiModel::select('id','name')->get();
-                $data['txt_button'] = "Tambah DPT Baru";
-                $data['href'] = "user/siswa/action/add";
-                //dd($data['id_adm_dept']);
-                return view('dpt.index', $data);
+                $data['txt_button'] = "Tambah Member Baru";
+                $data['href'] = "member/action/add";
+                
+                return view('member.index', $data);
             }
         } catch (\Exception $e) {
             $data['code']    = 500;
             $data['message'] = $e->getMessage();
             $data['line'] = $e->getLine();
-            $data['controller'] = 'DptController@index';
+            $data['controller'] = 'MemberController@index';
             $insert_error = parent::InsertErrorSystem($data);
             $error = parent::sidebar();
             $error['id'] = $insert_error;
@@ -61,14 +59,14 @@ class DptController extends Controller
                 return redirect('/');
             } else {
                 $role_id           = Auth::guard('admin')->user()->id_role;
-                //dd($data['id_adm_dept']);
-                return view('dpt.import', $data);
+                
+                return view('member.import', $data);
             }
         } catch (\Exception $e) {
             $data['code']    = 500;
             $data['message'] = $e->getMessage();
             $data['line'] = $e->getLine();
-            $data['controller'] = 'DptController@import';
+            $data['controller'] = 'MemberController@import';
             $insert_error = parent::InsertErrorSystem($data);
             $error = parent::sidebar();
             $error['id'] = $insert_error;
@@ -87,13 +85,13 @@ class DptController extends Controller
             } else {
                 $role_id           = Auth::guard('admin')->user()->id_role;
                 //dd($data['id_adm_dept']);
-                return view('dpt.pairing', $data);
+                return view('member.pairing', $data);
             }
         } catch (\Exception $e) {
             $data['code']    = 500;
             $data['message'] = $e->getMessage();
             $data['line'] = $e->getLine();
-            $data['controller'] = 'DptController@pairing';
+            $data['controller'] = 'MemberController@pairing';
             $insert_error = parent::InsertErrorSystem($data);
             $error = parent::sidebar();
             $error['id'] = $insert_error;
@@ -101,7 +99,7 @@ class DptController extends Controller
         }
     }
 
-    public function post_import_dpt(Request $request){
+    public function post_impormembers(Request $request){
         
         try {
             
@@ -123,69 +121,37 @@ class DptController extends Controller
                             //open uploaded csv file with read only mode
                             $csvFile = fopen($_FILES['file']['tmp_name'], 'r');
                             //skip first line
-                            fgets($csvFile);
+                            fgetcsv($csvFile);
                             //parse data from csv file line by line
                             //$data = fgetcsv($csvFile);
-                            while(($csv_excel = fgets($csvFile)) !== FALSE){
+                            while(($line = fgetcsv($csvFile)) !== FALSE){
+                                                                                           
+                                $nkk = (isset($line[0])) ? $line[0] : null ;
+                                $nik = (isset($line[1])) ? $line[1] : null ;  
+                                $name = (isset($line[2])) ? $line[2] : null ; 
+                                $birthplace = (isset($line[3])) ? $line[3] : null ; 
+                                $birthdate = (isset($line[4])) ? $line[4] : null ; 
+                                $status = (isset($line[5])) ? $line[5] : null ; 
+                                $gender = (isset($line[6])) ? $line[6] : null ; 
+                                $address = (isset($line[7])) ? $line[7] : null ; 
+                                $rt = (isset($line[8])) ? $line[8] : null ; 
+                                $rw = (isset($line[9])) ? $line[9] : null ; 
                                 
-                                $line = explode("#", $csv_excel);
-                                
-                                $id_village =  (isset($line[2])) ? $line[2] : null ; 
-                                $village = (isset($line[3])) ? $line[3] : null ;
-                                $dpid = (isset($line[4])) ? $line[4] : null ; 
-                                $nkk = (isset($line[5])) ? $line[5] : null ; 
-                                $nik = (isset($line[6])) ? $line[6] : null ; 
-                                $name = (isset($line[7])) ? $line[7] : null ; 
-                                $tmp_lahir = (isset($line[8])) ? $line[8] : null ; 
-                                $tgl_lahir = (isset($line[9])) ? $line[9] : null ; 
-                                $kawin = (isset($line[10])) ? $line[10] : null ; 
-                                $gender = (isset($line[11])) ? $line[11] : null ; 
-                                $address = (isset($line[12])) ? $line[12] : null ; 
-                                $rt = (isset($line[13])) ? $line[13] : null ; 
-                                $rw = (isset($line[14])) ? $line[14] : null ; 
-                                $dis = (isset($line[15])) ? $line[15] : null ; 
-                                $ektp = (isset($line[16])) ? $line[16] : null ; 
-                                $ket = (isset($line[17])) ? $line[17] : null ; 
-                                $sumber = (isset($line[18])) ? $line[18] : null ; 
-                                $tps_id = (isset($line[19])) ? $line[19] : null ; 
-                                $tps = (isset($line[20])) ? $line[20] : null ; 
-                                $updated = (isset($line[21])) ? $line[21] : null ; 
-                                $status = (isset($line[22])) ? $line[22] : null ; 
-                                $rank = (isset($line[23])) ? $line[23] : null ; 
-                                $tahapan = (isset($line[24])) ? $line[24] : null ; 
-                                $clasification = (isset($line[25])) ? $line[25] : null ; 
-                                $age = (isset($line[26])) ? $line[26] : null ; ;
                                 
                                 $insert_class = array(
-                                    'id_village' => trim(preg_replace('/\s\s+/', ' ',$id_village)),
-                                    'village' => trim(preg_replace('/\s\s+/', ' ',$village)),
-                                    'dpid' => trim(preg_replace('/\s\s+/', ' ',$dpid)),
-                                    'id_tps' => trim(preg_replace('/\s\s+/', ' ',$tps_id)),
-                                    'tps' => trim(preg_replace('/\s\s+/', ' ',$tps)),
                                     'nkk' => trim(preg_replace('/\s\s+/', ' ',$nkk)),
                                     'nik' => trim(preg_replace('/\s\s+/', ' ',$nik)),
                                     'name' => trim(preg_replace('/\s\s+/', ' ',$name)),
-                                    'birth_place' => trim(preg_replace('/\s\s+/', ' ',$tmp_lahir)),
-                                    'birth_day' => trim(preg_replace('/\s\s+/', ' ',$tgl_lahir)),
+                                    'birthplace' => trim(preg_replace('/\s\s+/', ' ',$birthdate)),
+                                    'birthday' => trim(preg_replace('/\s\s+/', ' ',$birthdate)),
                                     'gender' => trim(preg_replace('/\s\s+/', ' ',$gender)),
-                                    'marriage_sts' => trim(preg_replace('/\s\s+/', ' ',$kawin)),
                                     'address' => trim(preg_replace('/\s\s+/', ' ',$address)),
-                                    'disability' => trim(preg_replace('/\s\s+/', ' ',$dis)),
                                     'rt' => trim(preg_replace('/\s\s+/', ' ',$rt)),
-                                    'rw' => trim(preg_replace('/\s\s+/', ' ',$rw)),
-                                    'ektp' => trim(preg_replace('/\s\s+/', ' ',$ektp)),
-                                    'rank' => trim(preg_replace('/\s\s+/', ' ',$rank)),
-                                    'source' => trim(preg_replace('/\s\s+/', ' ',$sumber)),
-                                    'description' => trim(preg_replace('/\s\s+/', ' ',$ket)),
-                                    'status' => trim(preg_replace('/\s\s+/', ' ',$status)),
-                                    'tahapan' => trim(preg_replace('/\s\s+/', ' ',$tahapan)),
-                                    'last_update' => trim(preg_replace('/\s\s+/', ' ',$updated)),
-                                    'clasification' => trim(preg_replace('/\s\s+/', ' ',$clasification)),
-                                    'age' => trim(preg_replace('/\s\s+/', ' ',$age)),                           
+                                    'rw' => trim(preg_replace('/\s\s+/', ' ',$rw)),                                                      
                                     'created_at' => date('Y-m-d H:i:s'),
                                     'updated_at' => date('Y-m-d H:i:s')
                                 );
-                                $id_class = DB::table('t_dpt')->insertGetId($insert_class);                               
+                                $id_class = DB::table('members')->insertGetId($insert_class);                               
 
                             }
                         }
@@ -195,7 +161,7 @@ class DptController extends Controller
                     fclose($csvFile);
         
                     $data['code']    = 200;
-                    $data['message'] = "Berhasil Mengimport Data DPT";
+                    $data['message'] = "Berhasil Mengimport Data Member";
                 } else {
                     $data['code']    = 500;
                     $data['message'] = "Tipe File Tidak Sesuai. Pastikan file bertipe csv";
@@ -206,95 +172,17 @@ class DptController extends Controller
             $data['code']    = 500;
             $data['message'] = $e->getMessage();
             $data['line'] = $e->getLine();
-            $data['controller'] = 'DptController@post_import_dpt';
+            $data['controller'] = 'MemberController@post_impormembers';
             $insert_error = parent::InsertErrorSystem($data);
             return response()->json($data); // jika metode Post
         }
 
     }
 
-    public function post_pairing_dpt(Request $request){
-        
-        try {
-            
-            $csvMimes = array('text/x-comma-separated-values', 'text/comma-separated-values', 'application/octet-stream', 'application/vnd.ms-excel', 'application/x-csv', 'text/x-csv', 'text/csv', 'application/csv', 'application/excel', 'application/vnd.msexcel', 'text/plain','csv, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet','application/vnd.ms-excel','application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
-            
-            $nik_location = (int)$request->nik - 1;
-            $page = 0;
-            if(empty($_FILES['file']['name'])) {
-                $data['code']    = 500;
-                $data['message'] = "File Kosong";
-            } else {
-                if(in_array($_FILES['file']['type'],$csvMimes)){
-                    if(is_uploaded_file($_FILES['file']['tmp_name'])){ 
-                        // check file size
-                        if(filesize($_FILES['file']['tmp_name']) > 51200000000000000) {
-                            $data['code']    = 500;
-                            $data['message'] = "File Maksimal 500 Mb";
-                        } else {
-                            //open uploaded csv file with read only mode
-                            $csvFile = fopen($_FILES['file']['tmp_name'], 'r');
-                            //skip first line
-                            fgets($csvFile);
-                            //parse data from csv file line by line
-                            //$data = fgetcsv($csvFile);
-                            while(($csv_excel = fgets($csvFile)) !== FALSE){
-                        
-                                $line = explode("#", $csv_excel);
-                                //$line = $csv_excel;
-                                //dd($line);
-                                $status = "Tidak ada di Sidalih";
-                                $count = count($line);
-                                $page = $count;
-                                $array = [];
-                                for ($i=0; $i < $count; $i++) { 
-                                    $clean = str_replace('"', '', $line[$i]);
-                                    $clean = trim(preg_replace('/\s\s+/', ' ', $clean));
-                                    // if ($i == $nik_location) {
-                                    //     $clean = "'".$clean;
-                                    // }
-                                    $array['col'.$i] = $clean;
-                                }
-                                $nik = str_replace('"', '', $line[$nik_location]);
-                                //dd($nik);
-                                $check = DB::table('t_dpt')->where('nik',$nik)->whereNotIn('status',['tms','delete'])->count();
-                                if ($check > 0) {
-                                    $status = "Ada di Sidalih";
-                                }
-
-                                $array['col'.$count] = $status;
-                                TemporaryMonggoDB::create($array);                         
-
-                            }
-                        }
-                        
-                    }                   
-                    //close opened csv file
-                    fclose($csvFile);
-        
-                    $data['code']    = 200;
-                    $data['page']  = (int)$page;
-                    $data['message'] = "Berhasil Mengimport Data DPT";
-                } else {
-                    $data['code']    = 500;
-                    $data['message'] = "Tipe File Tidak Sesuai. Pastikan file bertipe csv";
-                }
-                return response()->json($data);
-            }
-        } catch (\Exception $e) {
-            $data['code']    = 500;
-            $data['message'] = $e->getMessage();
-            $data['line'] = $e->getLine();
-            $data['controller'] = 'DptController@post_import_dpt';
-            $insert_error = parent::InsertErrorSystem($data);
-            return response()->json($data); // jika metode Post
-        }
-
-    }
-
+    
     public function calculate(Request $request)
     {
-        $posts = $this->DataDpt($request);
+        $posts = $this->DataMember($request);
 
         
         $total = $posts->select('gender')->count();
@@ -310,7 +198,7 @@ class DptController extends Controller
     public function list_data(Request $request)
     {
 
-        $totalData = DB::table('t_dpt')->count();
+        $totalData = DB::table('members')->count();
         $totalFiltered = $totalData;
         $limit = $request->input('length');
         $start = $request->input('start');
@@ -318,7 +206,7 @@ class DptController extends Controller
         $search = $request->search;
         $status = $request->status;
 
-        $posts = $this->DataDpt($request);
+        $posts = $this->DataMember($request);
 
         $posts = $posts->select('p.*','v.name as desa','c.name as kecamatan');
         
@@ -358,10 +246,10 @@ class DptController extends Controller
         echo json_encode($json_data);
     }
 
-    public function DataDpt($request){
+    public function DataMember($request){
         $search      = $request->search;
         
-        $posts = DB::table('t_dpt as p')->leftJoin('villages as v','v.id','p.id_village')->leftJoin('districts as c','c.id','v.district_id');
+        $posts = DB::table('members as p')->leftJoin('villages as v','v.id','p.id_village')->leftJoin('districts as c','c.id','v.district_id');
         if ($search != null) {
             $posts = $posts->where(function ($query) use ($search,$request) {
                 $query->where('p.name','ilike', "%{$search}%");
@@ -414,7 +302,7 @@ class DptController extends Controller
             $data['data_city'] = CityModel::whereNull('deleted_at')->get();
             $data['header_name'] = "Tambah Siswa Baru";
             //dd($data['id_adm_dept']);
-            return view('dpt.add', $data);
+            return view('member.add', $data);
         }
     }
 
@@ -422,7 +310,7 @@ class DptController extends Controller
     {
         // id bermasalah
         try {
-            $input = $request->except('_token','id_scholl','id_class','tgl_masuk');
+            $input = $request->except('_token');
 
             if ($request->file('image')) {
                 $input['image']  = parent::uploadFileS3($request->file('image'));
@@ -430,10 +318,10 @@ class DptController extends Controller
 
             $input['created_at'] = date('Y-m-d H:i:s');
             $input['updated_at'] = date('Y-m-d H:i:s');
-            $insert = DB::table('dpts')->insertGetId($input);
+            $insert = DB::table('Members')->insertGetId($input);
             if ($insert) {
-                $insert_class = DB::table('dpt_class_relations')->insert(['id_dpt'=>$insert,'id_class'=>$request->id_class,'tgl_masuk'=>$request->tgl_masuk,'description'=>'Siswa Baru','is_active'=>1,'created_at'=>date('Y-m-d H:i:s'),'updated_at'=>date('Y-m-d H:i:s')]);
-                $insert_log      = parent::LogAdmin(\Request::ip(),Auth::guard('admin')->user()->id,'Menambah Data Siswa '.$request->dpt_name.'','siswa');
+                $insert_class = DB::table('Member_class_relations')->insert(['id_Member'=>$insert,'id_class'=>$request->id_class,'tgl_masuk'=>$request->tgl_masuk,'description'=>'Siswa Baru','is_active'=>1,'created_at'=>date('Y-m-d H:i:s'),'updated_at'=>date('Y-m-d H:i:s')]);
+                $insert_log      = parent::LogAdmin(\Request::ip(),Auth::guard('admin')->user()->id,'Menambah Data Siswa '.$request->Member_name.'','siswa');
                 $data['code']    = 200;
                 $data['message'] = 'Berhasil menambah data siswa';
                 return response()->json($data);
@@ -446,7 +334,7 @@ class DptController extends Controller
             $data['code']    = 500;
             $data['message'] = $e->getMessage();
             $data['line'] = $e->getLine();
-            $data['controller'] = 'DptController@post';
+            $data['controller'] = 'MemberController@post';
             $insert_error = parent::InsertErrorSystem($data);
             return response()->json($data); // jika metode Post
         }
@@ -456,21 +344,21 @@ class DptController extends Controller
     {
         try {
         //dd($request->nik);
-            $input = $request->except('_token','id_scholl','id_class','tgl_masuk');
+            $input = $request->except('_token');
 
             if ($request->file('image')) {
                 $input['image']  = parent::uploadFileS3($request->file('image'));
             } 
             $data['updated_at'] = date('Y-m-d H:i:s');
 
-            $insert = dptModel::where('id', $request->id)->update($input);
+            $insert = MemberModel::where('id', $request->id)->update($input);
             if ($insert) {
-                $cek_same_class = DB::table('dpt_class_relations')->where('id_dpt',$request->id)->where('is_active',1)->pluck('id_class');
+                $cek_same_class = DB::table('Member_class_relations')->where('id_Member',$request->id)->where('is_active',1)->pluck('id_class');
                 if ($cek_same_class != $request->id_class) {
-                    $nonactive = DB::table('dpt_class_relations')->where('id_dpt',$request->id)->update(['is_active'=>0]);
-                    $insert_class = DB::table('dpt_class_relations')->insert(['id_dpt'=>$request->id,'id_class'=>$request->id_class,'tgl_masuk'=>$request->tgl_masuk,'description'=>'Pindah kelas','is_active'=>1,'created_at'=>date('Y-m-d H:i:s'),'updated_at'=>date('Y-m-d H:i:s')]);
+                    $nonactive = DB::table('Member_class_relations')->where('id_Member',$request->id)->update(['is_active'=>0]);
+                    $insert_class = DB::table('Member_class_relations')->insert(['id_Member'=>$request->id,'id_class'=>$request->id_class,'tgl_masuk'=>$request->tgl_masuk,'description'=>'Pindah kelas','is_active'=>1,'created_at'=>date('Y-m-d H:i:s'),'updated_at'=>date('Y-m-d H:i:s')]);
                 }
-                $insert_log      = parent::LogAdmin(\Request::ip(),Auth::guard('admin')->user()->id,'Mengupdate Data Siswa '.$request->dpt_name.'','kelas');
+                $insert_log      = parent::LogAdmin(\Request::ip(),Auth::guard('admin')->user()->id,'Mengupdate Data Siswa '.$request->Member_name.'','kelas');
                 $data['code']    = 200;
                 $data['message'] = 'Berhasil Mengupdate data kelas';
                 return response()->json($data);
@@ -484,7 +372,7 @@ class DptController extends Controller
             $data['code']    = 500;
             $data['message'] = $e->getMessage();
             $data['line'] = $e->getLine();
-            $data['controller'] = 'DptController@update';
+            $data['controller'] = 'MemberController@update';
             $insert_error = parent::InsertErrorSystem($data);
             return response()->json($data); // jika metode Post
         }
@@ -495,7 +383,7 @@ class DptController extends Controller
         try {
             $id = base64_decode($ids);
             //dd($id);
-            $admin = dptModel::find($id);
+            $admin = MemberModel::find($id);
             //dd($admin);
             
             $data = parent::sidebar();
@@ -516,13 +404,13 @@ class DptController extends Controller
                 $data['id_scholl'] = $this->GetScholl($admin->id,'id_scholl');
                 $data['id_class'] = $this->GetClass($admin->id,'id_class');
                 $data['tgl_masuk'] = $this->GetClass($admin->id,'tgl_masuk');
-                return view('dpt.dialog_edit', $data);
+                return view('member.dialog_edit', $data);
             }
         } catch (\Exception $e) {
             $data['code']    = 500;
             $data['message'] = $e->getMessage();
             $data['line'] = $e->getLine();
-            $data['controller'] = 'DptController@detail';
+            $data['controller'] = 'MemberController@detail';
             $insert_error = parent::InsertErrorSystem($data);
             $error = parent::sidebar();
             $error['id'] = $insert_error;

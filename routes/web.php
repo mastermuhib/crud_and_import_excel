@@ -19,7 +19,7 @@ Route::get('/login', function () {
 
 //signout
 Route::get('/logout', 'Logincontroller@logout')->middleware('auth:admin');
-
+Route::post('/login', 'Logincontroller@login');
 
 
 //member

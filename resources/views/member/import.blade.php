@@ -59,7 +59,7 @@ $("#form_add").validate({
         });
         $.ajax({ //line 28
             type: 'POST',
-            url: '/post_import_dpt',
+            url: '/post_import_member',
             dataType: 'json',
             data: new FormData($("#form_add")[0]),
             processData: false,
@@ -68,7 +68,7 @@ $("#form_add").validate({
                 $("#loading_btn").css('display','none');
                 $("#save_btn").css('display','');
                 show_toast(data.message, 1);
-                location.assign('/dpt/list');
+                location.assign('/member/list');
             }, error : function(data) {
                 $("#loading_btn").css('display','none');
                 $("#save_btn").css('display','');

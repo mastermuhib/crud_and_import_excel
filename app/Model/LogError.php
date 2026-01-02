@@ -4,13 +4,11 @@ namespace App\Model;
 
 use Illuminate\Database\Eloquent\Model;
 
-
-class MemberModel extends Model
+class LogError extends Model
 {
-    protected $table 	= 'members';
+    protected $table 	= 'log_errors';
     protected $guarded = [''];
     protected $hidden   = ['created_at','updated_at'];
-    public $incrementing = true;
-    //protected $keyType = 'uuid';
-
+    public $incrementing = false;
+    protected $dates = ['date','created_at'];
 }

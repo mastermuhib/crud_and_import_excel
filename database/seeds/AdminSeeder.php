@@ -16,24 +16,15 @@ class AdminSeeder extends Seeder
         date_default_timezone_set('Asia/Jakarta');
         DB::table('menus')->truncate();
         DB::table('menus')->insert([
-            ['name' =>  'Dashboard',  'parent_menu_id' => 0,'created_at' => date('Y-m-d H:m:s'),'updated_at' => date('Y-m-d H:m:s'),'menu_id' => 1,'slug' =>'dashboard','icon'=>'fas fa-tachometer-alt','number'=>1],
             ['name' =>  'Administrator',  'parent_menu_id' => 0,'created_at' => date('Y-m-d H:m:s'),'updated_at' => date('Y-m-d H:m:s'),'menu_id' => 2,'slug' =>'administrator','icon'=>'fas fa-user-secret','number'=>2],
-            ['name' =>  'DPT',  'parent_menu_id' => 0,'created_at' => date('Y-m-d H:m:s'),'updated_at' => date('Y-m-d H:m:s'),'menu_id' => 3,'slug' =>'dpt','icon'=>'fab fa-cotton-bureau','number'=>3],
-            ['name' =>  'Master',  'parent_menu_id' => 0,'created_at' => date('Y-m-d H:m:s'),'updated_at' => date('Y-m-d H:m:s'),'menu_id' => 4,'slug' =>'master','icon'=>'fas fa-database','number'=>4],
-            ['name' =>  'Logs',  'parent_menu_id' => 0,'created_at' => date('Y-m-d H:m:s'),'updated_at' => date('Y-m-d H:m:s'),'menu_id' => 5,'slug' =>'logs','icon'=>'fa fa-history','number'=>5],
+            ['name' =>  'Member',  'parent_menu_id' => 0,'created_at' => date('Y-m-d H:m:s'),'updated_at' => date('Y-m-d H:m:s'),'menu_id' => 3,'slug' =>'member','icon'=>'fab fa-cotton-bureau','number'=>3],            
             // sub menu
             ['name' =>  'Tambah Admin','parent_menu_id' => 2,'created_at' => date('Y-m-d H:m:s'),'updated_at' => date('Y-m-d H:m:s'),'menu_id' => 0,'slug' =>'add-admin','icon'=>'null','number'=>1],
             ['name' =>  'List Admin','parent_menu_id' => 2,'created_at' => date('Y-m-d H:m:s'),'updated_at' => date('Y-m-d H:m:s'),'menu_id' => 0,'slug' =>'list-admin','icon'=>'null','number'=>2],
             ['name' =>  'Role Admin','parent_menu_id' => 2,'created_at' => date('Y-m-d H:m:s'),'updated_at' => date('Y-m-d H:m:s'),'menu_id' => 0,'slug' =>'role-admin','icon'=>'null','number'=>3],
             ['name' =>  'Pengaturan Menu','parent_menu_id' => 2,'created_at' => date('Y-m-d H:m:s'),'updated_at' => date('Y-m-d H:m:s'),'menu_id' => 0,'slug' =>'pengaturan-menu','icon'=>'null','number'=>4],
-            ['name' =>  'List DPT','parent_menu_id' => 3,'created_at' => date('Y-m-d H:m:s'),'updated_at' => date('Y-m-d H:m:s'),'menu_id' => 0,'slug' =>'list','icon'=>'null','number'=>1],
-            ['name' =>  'List Triwulan','parent_menu_id' => 3,'created_at' => date('Y-m-d H:m:s'),'updated_at' => date('Y-m-d H:m:s'),'menu_id' => 0,'slug' =>'step','icon'=>'null','number'=>2],
-            ['name' =>  'Riwayat DPT','parent_menu_id' => 3,'created_at' => date('Y-m-d H:m:s'),'updated_at' => date('Y-m-d H:m:s'),'menu_id' => 0,'slug' =>'history','icon'=>'null','number'=>3],
+            ['name' =>  'List Member','parent_menu_id' => 3,'created_at' => date('Y-m-d H:m:s'),'updated_at' => date('Y-m-d H:m:s'),'menu_id' => 0,'slug' =>'list','icon'=>'null','number'=>1],
             ['name' =>  'Import','parent_menu_id' => 3,'created_at' => date('Y-m-d H:m:s'),'updated_at' => date('Y-m-d H:m:s'),'menu_id' => 0,'slug' =>'import','icon'=>'null','number'=>4],
-            ['name' =>  'Master Kecamatan','parent_menu_id' => 4,'created_at' => date('Y-m-d H:m:s'),'updated_at' => date('Y-m-d H:m:s'),'menu_id' => 0,'slug' =>'kecamatan','icon'=>'null','number'=>4],
-            ['name' =>  'Master Desa','parent_menu_id' => 4,'created_at' => date('Y-m-d H:m:s'),'updated_at' => date('Y-m-d H:m:s'),'menu_id' => 0,'slug' =>'desa','icon'=>'null','number'=>5],
-            ['name' =>  'Logs Admin','parent_menu_id' => 5,'created_at' => date('Y-m-d H:m:s'),'updated_at' => date('Y-m-d H:m:s'),'menu_id' => 0,'slug' =>'logs_admin','icon'=>'null','number'=>1],
-            ['name' =>  'Logs Error','parent_menu_id' => 5,'created_at' => date('Y-m-d H:m:s'),'updated_at' => date('Y-m-d H:m:s'),'menu_id' => 0,'slug' =>'logs_error','icon'=>'null','number'=>3],
             ]);
         date_default_timezone_set('Asia/Jakarta');
         // seeder departement

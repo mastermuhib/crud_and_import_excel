@@ -137,7 +137,7 @@
                 </div>
                 <div class="modal-body">
                     
-                    <div class=""><h5>Apakah Anda yakin untuk menghapus siswa ini?</h5></div>
+                    <div class=""><h5>Apakah Anda yakin untuk menghapus member ini?</h5></div>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-primary" data-dismiss="modal" id="aksi_delete">OK</button>
@@ -156,7 +156,7 @@ var column = [
         { "data": "nik" },
         { "data": "name" },
         { "data": "birthday" },
-        { "data": "foto" },
+        { "data": "photo" },
         { "data": "gender" },
         { "data": "status" },
         { "data": "actions" },
@@ -183,7 +183,7 @@ function data_tabel(table) {
 $(function() {
     //$('#myTable').DataTable();
     $(".select2-container--default").css('width', '100%');
-    data_tabel('/data_dpt')
+    data_tabel('/data_member')
     
 });
 

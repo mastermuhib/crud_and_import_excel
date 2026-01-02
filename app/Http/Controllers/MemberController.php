@@ -9,6 +9,7 @@ use App\Model\KlasifikasiModel;
 use App\Model\CityModel;
 use App\Model\UserModel;
 use Maatwebsite\Excel\Facades\Excel;
+use App\Imports\MembersImport;
 use App\Model\TemporaryMonggoDB;
 use App\Classes\upload;
 use App\Traits\Fungsi;
@@ -99,13 +100,14 @@ class MemberController extends Controller
         }
     }
 
-    public function post_impormembers(Request $request){
+    public function post_import_member(Request $request){
         
         try {
             
-            $csvMimes = array('text/x-comma-separated-values', 'text/comma-separated-values', 'application/octet-stream', 'application/vnd.ms-excel', 'application/x-csv', 'text/x-csv', 'text/csv', 'application/csv', 'application/excel', 'application/vnd.msexcel', 'text/plain','csv, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet','application/vnd.ms-excel');
+            $csvMimes = array('text/x-comma-separated-values', 'text/comma-separated-values', 'application/octet-stream', 'application/vnd.ms-excel', 'application/x-csv', 'text/x-csv', 'text/csv', 'application/csv', 'application/excel', 'application/vnd.msexcel', 'text/plain','csv, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet','application/vnd.ms-excel','application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
             //dd($_FILES);
             //(isset($line[])) ? "" : null ; $originalString);
+            //dd($_FILES['file']['type']);
             
             if(empty($_FILES['file']['name'])) {
                 $data['code']    = 500;
@@ -118,47 +120,16 @@ class MemberController extends Controller
                             $data['code']    = 500;
                             $data['message'] = "File Maksimal 500 Mb";
                         } else {
-                            //open uploaded csv file with read only mode
-                            $csvFile = fopen($_FILES['file']['tmp_name'], 'r');
-                            //skip first line
-                            fgetcsv($csvFile);
-                            //parse data from csv file line by line
-                            //$data = fgetcsv($csvFile);
-                            while(($line = fgetcsv($csvFile)) !== FALSE){
-                                                                                           
-                                $nkk = (isset($line[0])) ? $line[0] : null ;
-                                $nik = (isset($line[1])) ? $line[1] : null ;  
-                                $name = (isset($line[2])) ? $line[2] : null ; 
-                                $birthplace = (isset($line[3])) ? $line[3] : null ; 
-                                $birthday = (isset($line[4])) ? $line[4] : null ; 
-                                $status = (isset($line[5])) ? $line[5] : null ; 
-                                $gender = (isset($line[6])) ? $line[6] : null ; 
-                                $address = (isset($line[7])) ? $line[7] : null ; 
-                                $rt = (isset($line[8])) ? $line[8] : null ; 
-                                $rw = (isset($line[9])) ? $line[9] : null ; 
-                                
-                                
-                                $insert_class = array(
-                                    'nkk' => trim(preg_replace('/\s\s+/', ' ',$nkk)),
-                                    'nik' => trim(preg_replace('/\s\s+/', ' ',$nik)),
-                                    'name' => trim(preg_replace('/\s\s+/', ' ',$name)),
-                                    'birthplace' => trim(preg_replace('/\s\s+/', ' ',$birthplace)),
-                                    'birthday' => trim(preg_replace('/\s\s+/', ' ',$birthday)),
-                                    'gender' => trim(preg_replace('/\s\s+/', ' ',$gender)),
-                                    'address' => trim(preg_replace('/\s\s+/', ' ',$address)),
-                                    'rt' => trim(preg_replace('/\s\s+/', ' ',$rt)),
-                                    'rw' => trim(preg_replace('/\s\s+/', ' ',$rw)),                                                      
-                                    'created_at' => date('Y-m-d H:i:s'),
-                                    'updated_at' => date('Y-m-d H:i:s')
-                                );
-                                $id_class = DB::table('members')->insertGetId($insert_class);                               
-
-                            }
+                            
+                            Excel::import(new MembersImport, $request->file('file'));
                         }
                         
-                    }                   
+                    } else {
+                        $data['code']    = 500;
+                        $data['message'] = "Error ".$_FILES['file']['tmp_name'];
+                    }                  
                     //close opened csv file
-                    fclose($csvFile);
+                    //fclose($csvFile);
         
                     $data['code']    = 200;
                     $data['message'] = "Berhasil Mengimport Data Member";
@@ -250,14 +221,13 @@ class MemberController extends Controller
         $posts = DB::table('members as p');
         if ($search != null) {
             $posts = $posts->where(function ($query) use ($search,$request) {
-                $query->where('p.name','ilike', "%{$search}%");
-                $query->orWhere('address','ilike', "%{$search}%");
-                $query->orWhere('nik','ilike', "%{$search}%"); 
-                $query->orWhere('nkk','ilike', "%{$search}%");  
+                $query->where('p.name','like', "%{$search}%");
+                $query->orWhere('address','like', "%{$search}%");
+                $query->orWhere('nik','like', "%{$search}%"); 
+                $query->orWhere('nkk','like', "%{$search}%");  
             });
         }
-
-                
+        
         return $posts;
     }
 

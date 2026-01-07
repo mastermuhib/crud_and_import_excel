@@ -24,9 +24,7 @@ class MemberController extends Controller
 {
     public function index()
     {
-        //dd("cukk");
-        // dd(Kelas::get());
-        //dd(Auth::guard('admin')->user()->id_scholl);
+        
         try {
             $data = parent::sidebar();
             if ($data['access'] == 0) {
@@ -43,6 +41,34 @@ class MemberController extends Controller
             $data['message'] = $e->getMessage();
             $data['line'] = $e->getLine();
             $data['controller'] = 'MemberController@index';
+            $insert_error = parent::InsertErrorSystem($data);
+            $error = parent::sidebar();
+            $error['id'] = $insert_error;
+            return view('errors.index',$error); // jika Metode Get
+            //return response()->json($data); // jika metode Post
+        }
+    }
+
+
+    public function add()
+    {
+        
+        try {
+            $data = parent::sidebar();
+            if ($data['access'] == 0) {
+                return redirect('/');
+            } else {
+                $role_id           = Auth::guard('admin')->user()->id_role;
+                $data['txt_button'] = "none";
+                $data['href'] = "none";
+                
+                return view('member.add', $data);
+            }
+        } catch (\Exception $e) {
+            $data['code']    = 500;
+            $data['message'] = $e->getMessage();
+            $data['line'] = $e->getLine();
+            $data['controller'] = 'MemberController@add';
             $insert_error = parent::InsertErrorSystem($data);
             $error = parent::sidebar();
             $error['id'] = $insert_error;
@@ -232,39 +258,29 @@ class MemberController extends Controller
     }
 
 
-    public function add()
-    {
-        $data = parent::sidebar();
-        if ($data['access'] == 0) {
-            return redirect('/');
-        } else {
-            $role_id           = Auth::guard('admin')->user()->id_role;
-            $data['data_scholl'] = SchollModel::whereNull('deleted_at')->get();
-            $data['data_city'] = CityModel::whereNull('deleted_at')->get();
-            $data['header_name'] = "Tambah Siswa Baru";
-            //dd($data['id_adm_dept']);
-            return view('member.add', $data);
-        }
-    }
-
+    
     public function post(Request $request)
     {
         // id bermasalah
         try {
-            $input = $request->except('_token');
+            $input = $request->except('_token','photo');
 
-            if ($request->file('image')) {
-                $input['image']  = parent::uploadFileS3($request->file('image'));
+            if ($request->file('photo')) {
+                // $input['image']  = parent::uploadFileS3($request->file('image'));
+                $file = $request->file('photo');
+                $namefile = $file->getClientOriginalName().'_'.date('YmdHis');
+                $file->move('uploads',$namefile);
+                $input['photo']  = $namefile;
             } 
 
             $input['created_at'] = date('Y-m-d H:i:s');
             $input['updated_at'] = date('Y-m-d H:i:s');
-            $insert = DB::table('Members')->insertGetId($input);
+            $insert = DB::table('members')->insertGetId($input);
             if ($insert) {
-                $insert_class = DB::table('Member_class_relations')->insert(['id_Member'=>$insert,'id_class'=>$request->id_class,'tgl_masuk'=>$request->tgl_masuk,'description'=>'Siswa Baru','is_active'=>1,'created_at'=>date('Y-m-d H:i:s'),'updated_at'=>date('Y-m-d H:i:s')]);
-                $insert_log      = parent::LogAdmin(\Request::ip(),Auth::guard('admin')->user()->id,'Menambah Data Siswa '.$request->Member_name.'','siswa');
+                
+                $insert_log      = parent::LogAdmin(\Request::ip(),Auth::guard('admin')->user()->id,'Menambah Data Member '.$request->name.'','member');
                 $data['code']    = 200;
-                $data['message'] = 'Berhasil menambah data siswa';
+                $data['message'] = 'Berhasil menambah data member';
                 return response()->json($data);
             } else {
                 $data['code']    = 500;
@@ -359,18 +375,6 @@ class MemberController extends Controller
             //return response()->json($data); // jika metode Post
         }
     }
-
     
-    public function download_pairing($coloumn){
-       
-        $data['data'] = TemporaryMonggoDB::select('*')->get()->toArray();
-        //dd($data['data']);
-        $data['coloumn'] = $coloumn;
-        $date = date('d F Y H:i'); 
-        TemporaryMonggoDB::whereNotNull('created_at')->delete();   
-
-        return Excel::download(new ExportPairingResults($data), 'Hasil Sanding Data '.$date.'.xlsx');
-    }
-
-
+    
 }

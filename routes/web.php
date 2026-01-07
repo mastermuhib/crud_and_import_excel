@@ -12,6 +12,9 @@ use Illuminate\Support\Facades\Route;
 | contains the "web" middleware groufdetailp. Now create something great!
 |
 */
+Route::get('/', function () {
+    return view('login');
+})->name('index');
 Route::get('/login', function () {
     return view('login');
 })->name('login');
@@ -32,7 +35,7 @@ Route::post('/active/member','MemberController@active')->middleware('auth:admin'
 Route::post('/delete/member','MemberController@delete')->middleware('auth:admin');
 Route::get('/member/detail/{id}','MemberController@detail')->middleware('auth:admin');
 Route::post('/update_member','MemberController@update')->middleware('auth:admin');
-Route::get('/user/member/action/add','MemberController@add')->middleware('auth:admin');
+Route::get('/member/add','MemberController@add')->middleware('auth:admin');
 Route::get('/member/import','MemberController@import')->middleware('auth:admin');
 Route::post('/post_import_member','MemberController@post_import_member')->middleware('auth:admin');
 Route::post('/member/calculate','MemberController@calculate')->middleware('auth:admin');
